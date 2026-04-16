@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Alert } from 'react-native';
 import { auth, db } from '../../firebase/config';
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, writeBatch } from "firebase/firestore";
@@ -24,57 +25,59 @@ export default function RegistrationScreen({ navigation }) {
 
   const handleSignUp = async () => {
     setErrors({});
-    let currentErrors = {};
-
-    if (!email.includes('@')) currentErrors.email = "Некорректный email";
-    if (login.length <= 2) currentErrors.login = "Логин слишком короткий";
-    if (password.length < 6) currentErrors.password = "Пароль минимум 6 символов";
-
-    if (Object.keys(currentErrors).length > 0) {
-      setErrors(currentErrors);
-      showNotification("Проверьте правильность заполнения полей", "error");
+    
+    // Валидация
+    if (!email.includes('@')) {
+      showNotification("Введите корректный email");
+      return;
+    }
+    if (login.length < 3) {
+      showNotification("Логин должен быть длиннее 2 символов");
+      return;
+    }
+    if (password.length < 6) {
+      showNotification("Пароль должен быть не менее 6 символов");
       return;
     }
 
     try {
+      // 1. Создаем пользователя в Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
+      // 2. Используем Batch для записи в Firestore
       const batch = writeBatch(db);
 
+      // Ссылка на документ пользователя
       const userRef = doc(db, "users", user.uid);
+      // Ссылка на документ прогресса
+      const progressRef = doc(db, "progress", user.uid);
+
       batch.set(userRef, {
         uid: user.uid,
         email: email,
         login: login,
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
+        completedLessons: [], // Массив ID пройденных уроков
+        learnedWords: [],     // Объекты слов для режима Review
+        learnedGrammar: [],   // ID изученных правил
       });
 
-      const progressRef = doc(db, "progress", user.uid);
-      batch.set(progressRef, {
-        learnedWords: [],
-        totalPoints: 0,
-        lastTraining: new Date(),
-        level: 1
-      });
-
+      // Фиксируем транзакцию
       await batch.commit();
 
-      showNotification("Аккаунт успешно создан!", "success");
-
-      setTimeout(() => {
-        navigation.navigate('Login');
-      }, 2000);
+      showNotification("Регистрация успешна!", "success");
+      
+      // Переходим на главный экран (TabBar)
+      // Убедись, что 'Home' или 'Main' есть в App.js
+      navigation.replace('Home'); 
 
     } catch (error) {
-      console.error("Ошибка:", error.code);
+      console.error(error.code);
       if (error.code === 'auth/email-already-in-use') {
-        setErrors({ email: "Эта почта уже занята" });
-        showNotification("Email уже зарегистрирован", "error");
-      } else if (error.code === 'permission-denied') {
-        showNotification("Ошибка доступа к базе данных", "error");
+        showNotification("Эта почта уже занята");
       } else {
-        showNotification("Ошибка при регистрации", "error");
+        showNotification("Ошибка при регистрации. Попробуйте снова.");
       }
     }
   };
@@ -91,37 +94,37 @@ export default function RegistrationScreen({ navigation }) {
       <Logo />
 
       <AuthInput
-        label="Введите почту"
+        label="Электронная почта"
         value={email}
         onChangeText={setEmail}
-        placeholder={"example@mail.com"}
-        error={errors.email}
+        placeholder="example@mail.com"
       />
       
       <AuthInput
-        label="Введите логин"
+        label="Ваш логин"
         value={login}
         onChangeText={setLogin}
-        placeholder={"Ваш логин"}
-        error={errors.login}
+        placeholder="Nikos777"
       />
       
       <AuthInput
-        label="Введите пароль"
+        label="Пароль"
         value={password}
         onChangeText={setPassword}
-        placeholder={"********"}
+        placeholder="********"
         secureTextEntry={true}
-        error={errors.password}
       />
 
-      <AuthLink
-        description="Есть аккаунт?"
-        actionText="Войдите"
-        onPress={() => navigation.navigate('Login')}
+      <Button 
+        title="Создать аккаунт" 
+        onPress={handleSignUp} 
       />
 
-      <Button title="Продолжить" onPress={handleSignUp} />
+      <AuthLink 
+        description="Уже есть аккаунт?" 
+        actionText="Войти" 
+        onPress={() => navigation.navigate('Login')} 
+      />
     </ScreenWrapper>
   );
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, ImageBackground, SafeAreaView, StatusBar, View } from 'react-native';
+import { ImageBackground, StatusBar, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { styles } from './styles'; // Подключаем стили из отдельного файла
 
@@ -10,7 +10,7 @@ export function ScreenWrapper({ children }) {
       style={styles.backgroundImage} // Стили для растягивания
       resizeMode="cover" // Важно: "cover" растянет картинку, обрезав лишнее, но без искажений
     >
-      <SafeAreaView style={styles.safeArea}>
+      <View style={styles.safeArea}>
         <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
         
         <KeyboardAwareScrollView
@@ -25,7 +25,7 @@ export function ScreenWrapper({ children }) {
             {children}
           </View>
         </KeyboardAwareScrollView>
-      </SafeAreaView>
+      </View>
     </ImageBackground>
   );
 }
