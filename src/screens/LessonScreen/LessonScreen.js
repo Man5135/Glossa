@@ -38,6 +38,35 @@ const playFeedbackSound = async(isCorrect) => {
 const speak = (text) => {
   Speech.speak(text, { language: 'el', pitch: 0.9, rate: 0.8 });
 };
+const handleFinish = async () => {
+  setLoading(true);
+  try {
+    const uid = auth.currentUser?.uid;
+    if (!uid) return;
+
+    const userRef = doc(db, "users", uid);
+
+    // Собираем новые выученные слова и грамматику из текущего урока
+    const newWords = content.filter(i => i.type === 'word').map(i => i.id);
+    const newGrammar = content.filter(i => i.type === 'grammar').map(i => i.id);
+
+    await updateDoc(userRef, {
+      // Сохраняем ID урока. Убедись, что это строка, например "lesson_1"
+      completedLessons: arrayUnion(String(lessonData.id)), 
+      learnedWords: arrayUnion(...newWords),
+      learnedGrammar: arrayUnion(...newGrammar)
+    });
+    
+    Alert.alert("Успех!", "Урок пройден и прогресс сохранен");
+    navigation.goBack();
+  } catch (e) {
+    console.error(e);
+    Alert.alert("Ошибка", "Не удалось сохранить результат");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
 // --- Вспомогательный компонент таблицы ---
 const RenderTable = ({ data }) => {

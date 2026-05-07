@@ -26,6 +26,8 @@ export default function App(){
       setUser(user);
       setLoading(false);
     });
+
+
     return unsubscribe;
   }, []);
 
