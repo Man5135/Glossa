@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Alert } from 'react-native';
 import { auth, db } from '../../firebase/config';
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, writeBatch } from "firebase/firestore";
+import { doc,  writeBatch } from "firebase/firestore";
 
 import { ScreenWrapper } from '../../components/screen-wrapper/ScreenWrapper';
 import { Logo } from '../../components/logo/Logo';
@@ -14,6 +13,7 @@ import { Notification } from '../../components/notification/Notification';
 export default function RegistrationScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [login, setLogin] = useState('');
+  const [nickname, setNickname] = useState('');
   const [password, setPassword] = useState('');
 
   const [errors, setErrors] = useState({});
@@ -51,12 +51,13 @@ export default function RegistrationScreen({ navigation }) {
       // Ссылка на документ пользователя
       const userRef = doc(db, "users", user.uid);
       // Ссылка на документ прогресса
-      const progressRef = doc(db, "progress", user.uid);
 
       batch.set(userRef, {
         uid: user.uid,
         email: email,
         login: login,
+        nickname: nickname,
+        
         createdAt: new Date().toISOString(),
         completedLessons: [], // Массив ID пройденных уроков
         learnedWords: [],     // Объекты слов для режима Review
@@ -105,6 +106,13 @@ export default function RegistrationScreen({ navigation }) {
         value={login}
         onChangeText={setLogin}
         placeholder="Nikos777"
+      />
+
+      <AuthInput
+        label="Ваш никнейм"
+        value={nickname}
+        onChangeText={setNickname}
+        placeholder="Artur"
       />
       
       <AuthInput

@@ -8,7 +8,7 @@ import { Logo } from '../../components/logo/Logo';
 import { AuthInput } from '../../components/auth-input/AuthInput';
 import { Button } from '../../components/button/Button';
 import { AuthLink } from '../../components/auth-link/AuthLink';
-import { seedLessons } from '../../components/seedDatabase';
+import { seedAppDatabase, seedLessons } from '../../components/seedDatabase';
 
 
 export default function LoginScreen({ navigation }) {
@@ -27,7 +27,7 @@ export default function LoginScreen({ navigation }) {
       // Сама проверка Firebase
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       console.log("Успешный вход:", userCredential.user.email);
-      navigation.navigate('HomeScreen')
+      navigation.navigate('Main')
       
       Alert.alert("Успех", "Вы вошли в систему!");
       
@@ -77,7 +77,7 @@ export default function LoginScreen({ navigation }) {
       
       {/* Кнопка теперь вызывает handleLogin */}
       <Button title="Продолжить" onPress={handleLogin} />
-      <Button title="heh" onPress={seedLessons}/>
+      <Button title="heh" onPress={seedAppDatabase}/>
     </ScreenWrapper>
   );
 }

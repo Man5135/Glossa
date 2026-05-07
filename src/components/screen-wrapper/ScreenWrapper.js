@@ -1,31 +1,30 @@
 import React from 'react';
-import { ImageBackground, StatusBar, View } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { styles } from './styles'; // Подключаем стили из отдельного файла
+import { StatusBar, View, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { styles } from './styles';
 
 export function ScreenWrapper({ children }) {
   return (
-    <ImageBackground 
-      source={require('../../img/background.png')} // ПУТЬ К ТВОЕМУ ФОНУ
-      style={styles.backgroundImage} // Стили для растягивания
-      resizeMode="cover" // Важно: "cover" растянет картинку, обрезав лишнее, но без искажений
-    >
-      <View style={styles.safeArea}>
-        <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
-        
-        <KeyboardAwareScrollView
+    <View style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
+      
+      {/* KeyboardAvoidingView поможет кнопкам не перекрываться клавиатурой */}
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+        style={{ flex: 1 }}
+      >
+        <ScrollView
           style={styles.scrollView}
           contentContainerStyle={styles.contentContainer}
-          extraScrollHeight={20}
-          enableOnAndroid={true}
-          keyboardShouldPersistTaps="handled" // Чтобы тапы по экрану закрывали клавиатуру
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          // Это заставляет скролл работать, даже если контента мало
+          alwaysBounceVertical={true} 
         >
-          {/* Контейнер для контента с maxWidth, чтобы не было слишком широко */}
           <View style={styles.innerContainer}>
             {children}
           </View>
-        </KeyboardAwareScrollView>
-      </View>
-    </ImageBackground>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </View>
   );
 }

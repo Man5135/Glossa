@@ -25,5 +25,23 @@ export const styles = ({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+  },
+
+  lessonStepContainer: {
+    width: '100%',
+    alignItems: 'center', // Все уроки строго по центру
+  },
+
+  // Прямая вертикальная линия
+  verticalLine: {
+    width: 6,             // Толщина линии
+    height: 40,           // Высота линии между кнопками
+    backgroundColor: '#333', 
+    borderRadius: 3,
+  },
+
+  // Цвет линии, если путь пройден
+  lineActive: {
+    backgroundColor: '#00F0FF',
   }
 });

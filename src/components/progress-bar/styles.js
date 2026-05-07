@@ -1,20 +1,16 @@
 import { StyleSheet } from 'react-native';
 
-export const styles = StyleSheet.create= ({
-  container:{
-    width: '70',
-    heigth: 12,
-    alignSelf: 'center',
-  },
-  background: {
-    flex: 1,
-    backgroundColor: '#BCBCBC',
+export const styles = StyleSheet.create({ // Убрали лишнее "="
+  container: {
+    width: '100%',     // Растягиваем на всю ширину отведенного места
+    height: 12,        // Исправили height
+    backgroundColor: '#333', // Добавь фоновый цвет, чтобы видеть пустую полоску
     borderRadius: 10,
     overflow: 'hidden',
   },
   fill: {
-    heigth: '100%',
+    height: '100%',    // Исправили height
     backgroundColor: '#00E5FF',
     borderRadius: 10
   }
-})
+});

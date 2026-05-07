@@ -17,7 +17,6 @@ export default function HomeScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 1. Проверка авторизации
     if (!auth.currentUser) {
       setLoading(false);
       return;
@@ -25,14 +24,11 @@ export default function HomeScreen({ navigation }) {
 
     const uid = auth.currentUser.uid;
 
-    // 2. Слушаем прогресс пользователя в РЕАЛЬНОМ ВРЕМЕНИ
-    // Это заставляет экран обновляться мгновенно, когда урок пройден
     const userDocRef = doc(db, "users", uid);
     const unsubUser = onSnapshot(userDocRef, (snapshot) => {
       if (snapshot.exists()) {
         setUserData(snapshot.data());
       } else {
-        // Если документа пользователя нет, создаем структуру по умолчанию в стейте
         setUserData({
           completedLessons: [],
           learnedWords: [],
@@ -45,7 +41,6 @@ export default function HomeScreen({ navigation }) {
       setLoading(false);
     });
 
-    // 3. Загружаем список всех уроков из базы
     const fetchLessons = async () => {
       try {
         const q = query(collection(db, "lessons"), orderBy("order", "asc"));
@@ -95,7 +90,7 @@ export default function HomeScreen({ navigation }) {
     return (
       <ScreenWrapper>
         <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#2196F3" />
+          <ActivityIndicator size="large" color="#00F0FF" />
         </View>
       </ScreenWrapper>
     );
@@ -115,26 +110,35 @@ export default function HomeScreen({ navigation }) {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <View style={{ paddingHorizontal: 15 }}>
-          {lessons.map((lesson, index) => {
-            const status = getLessonStatus(lesson, index);
-            
-            return (
-              <LessonButton
-                key={lesson.id}
-                title={lesson.title}
-                status={status}
-                onPress={() => {
-                  if (status === 'locked') {
-                    Alert.alert("Урок закрыт", "Пройдите предыдущий урок, чтобы открыть этот.");
-                  } else {
-                    navigation.navigate('LessonScreen', { lessonData: lesson });
-                  }
-                }}
-              />
-            );
-          })}
-        </View>
+        {lessons.map((lesson, index) => {
+    const status = getLessonStatus(lesson, index);
+
+    return (
+      <View key={lesson.id} style={styles.lessonStepContainer}>
+        
+        {/* Рисуем прямую линию ПЕРЕД уроком */}
+        {index > 0 && (
+          <View style={[
+            styles.verticalLine, 
+            status !== 'locked' && styles.lineActive // Линия светится, если урок доступен
+          ]} />
+        )}
+
+        {/* Кнопка урока */}
+        <LessonButton
+          title={lesson.title}
+          status={status}
+          onPress={() => {
+            if (status === 'locked') {
+              Alert.alert("Урок закрыт", "Пройдите предыдущий урок");
+            } else {
+              navigation.navigate('LessonScreen', { lessonData: lesson });
+            }
+          }}
+        />
+      </View>
+    );
+  })}
 
         {lessons.length === 0 && !loading && (
           <View style={styles.loaderContainer}>

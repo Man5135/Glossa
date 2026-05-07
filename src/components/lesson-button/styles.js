@@ -4,7 +4,6 @@ export const styles = StyleSheet.create({
   button: {
     padding: 20,
     borderRadius: 15,
-    marginBottom: 15,
     width: '100%',
   },
   content: {
@@ -17,4 +16,7 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 18,
   },
+  completed: {
+    elevation: 10,
+  }
 });
