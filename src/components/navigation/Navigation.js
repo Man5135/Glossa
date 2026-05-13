@@ -8,6 +8,7 @@ import HomeScreen from '../../screens/HomeScreen/HomeScreen';
 import ProfileScreen from '../../screens/ProfileScreen/ProfileScreen'; 
 import { styles } from './styles';
 import GrammarScreen from '../../screens/GrammarScreen/GrammarScreen';
+import SettingsScreen from '../../screens/SettingsScreen/SettingsScreen';
 
 const BottomTab = createBottomTabNavigator();
 const TopTab = createMaterialTopTabNavigator();
@@ -20,8 +21,19 @@ export default function AppNavigation() {
     tabBarActiveTintColor: '#00F0FF',
     tabBarInactiveTintColor: '#888',
     tabBarIcon: ({ color, size }) => {
-      let iconName = route.name === 'Home' ? 'home' : 'person';
-      return <Ionicons name={iconName} size={size || 22} color={color} />;
+      let iconName;
+
+      // Добавляем условие для каждой вкладки
+      if (route.name === 'Home') {
+        iconName = 'home';
+      } else if (route.name === 'Grammar') {
+        iconName = 'book'; // Иконка книжки для грамматики
+      } else if (route.name === 'Profile') {
+        iconName = 'person';
+      }
+
+      // Используем размер 28, как обсуждали ранее, для удобства нажатия на телефоне
+      return <Ionicons name={iconName} size={28} color={color} />;
     },
   });
 
@@ -35,8 +47,8 @@ export default function AppNavigation() {
           swipeEnabled: false,
         })}
       >
-        <TopTab.Screen name="Grammar" component={GrammarScreen} options={{ title: 'ГРАММАТИКА' }} />
         <TopTab.Screen name="Home" component={HomeScreen} options={{ title: 'УРОКИ' }} />
+        <TopTab.Screen name="Grammar" component={GrammarScreen} options={{ title: 'ГРАММАТИКА' }} />
         <TopTab.Screen name="Profile" component={ProfileScreen} options={{ title: 'ПРОФИЛЬ' }} />
       </TopTab.Navigator>
     );

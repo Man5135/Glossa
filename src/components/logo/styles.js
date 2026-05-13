@@ -6,6 +6,11 @@ export const styles = StyleSheet.create({
     width: 180,
     height: 200,
     alignItems: 'center',
+    alignSelf: 'center',
     justifyContent: 'center',
   },
+  image:{
+    width: '100%',
+    height: '100%'
+  }
 })

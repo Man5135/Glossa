@@ -14,6 +14,8 @@ import { auth } from './src/firebase/config';
 import  AlphabetScreen  from './src/screens/AlphabetScreen/AlphabetScreen';
 import AdminScreen from './src/screens/AdminScreen/AdminScreen';
 import CreateLesson from './src/screens/CreateLesson/CreateLesson';
+import SettingsScreen from './src/screens/SettingsScreen/SettingsScreen';
+import ReviewScreen from './src/screens/ReviewScreen/ReviewScreen';
 
 const Stack = createStackNavigator();
 
@@ -55,9 +57,12 @@ export default function App(){
             <Stack.Screen name="Main" component={AppNavigation} />
             <Stack.Screen name="LessonScreen" component={LessonScreen} />
             <Stack.Screen name="Profile" component={ProfileScreen} />
+            <Stack.Screen name="Settings" component={SettingsScreen}/>
             <Stack.Screen name="Alphabet" component={AlphabetScreen}/>
             <Stack.Screen name="AdminScreen" component={AdminScreen}/>
             <Stack.Screen name="CreateLesson" component={CreateLesson}/>
+            <Stack.Screen name="Review" component={ReviewScreen}/>
+            
           </>
         ) : (
           // Если не вошел — отправляем на авторизацию

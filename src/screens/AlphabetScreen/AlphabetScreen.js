@@ -43,6 +43,11 @@ export default function AlphabetScreen( {navigation} ){
       <HeaderButton type="close" onPress={() => navigation.goBack()} />
     </View>
     <Typography variant="header" style={styles.header}>Греческий алфавит</Typography>
+    <View>
+      <Typography style={styles.text}>Греческий является официальным языком Греции и Кипра, на нем говорят около 13,5 миллионов человек по всему миру. 
+        В современном греческом языке 24 заглавные буквы и 25 строчных. Примечательно, что заглавная буква «Σ» в строчном варианте записывается и как «σ», и как «ς». В представленной таблице мы собрали все греческие буквы. Нажмите на каждый блок, чтобы услышать их названия. Некоторые названия, такие как «альфа» и «омега», могут показаться вам знакомыми. Однако вы также можете заметить различия — например, «veta» (вита) для B/β вместо привычного «бета».
+      </Typography>
+    </View>
     <View style={styles.grid}>
       {alphabetData.map((item) => (
         <TouchableOpacity key={item.id} style={styles.card}

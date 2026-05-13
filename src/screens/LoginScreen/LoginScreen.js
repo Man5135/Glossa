@@ -50,9 +50,6 @@ export default function LoginScreen({ navigation }) {
     <ScreenWrapper>
       <Logo />
 
-
-
-      
       {/* Привязываем переменные к инпутам */}
       <AuthInput 
         label="Введите почту" 
@@ -77,7 +74,6 @@ export default function LoginScreen({ navigation }) {
       
       {/* Кнопка теперь вызывает handleLogin */}
       <Button title="Продолжить" onPress={handleLogin} />
-      <Button title="heh" onPress={seedAppDatabase}/>
     </ScreenWrapper>
   );
 }

@@ -60,4 +60,9 @@ export const styles = {
     fontSize: 13,
     fontWeight: 'bold',
   },
+  text: {
+    fontSize: 16,
+    textAlign: 'flex-start',
+    color: '#ccc'
+  }
 };

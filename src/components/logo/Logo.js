@@ -5,7 +5,7 @@ import { styles } from "./styles";
 export function Logo(){
   return(
     <View style={styles.container}>
-      <Image source={require('../../img/logo.svg')}
+      <Image source={require('../../img/logo.png')}
       style={styles.image}
       resizeMode="contain"
       />

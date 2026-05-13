@@ -5,6 +5,8 @@ export const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 15,
     width: '100%',
+    borderBottomWidth: 5,           // Толщина кнопки
+    borderBottomColor: 'rgba(0, 0, 0, 0.3)',
   },
   content: {
     flexDirection: 'row',

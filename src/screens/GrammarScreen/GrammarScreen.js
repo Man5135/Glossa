@@ -133,13 +133,13 @@ export default function GrammarScreen({ navigation }) {
           >
             <View style={{ flex: 1 }}>
               <Typography variant="header" style={{ color: '#00F0FF', fontSize: 18 }}>
-                🇬🇷 Греческий алфавит
+                Алфавит
               </Typography>
               <Typography variant="caption" style={{ color: '#aaa' }}>
                 Основы чтения и произношение
               </Typography>
             </View>
-            <Ionicons name="musical-notes-outline" size={24} color="#00F0FF" />
+            <Ionicons name="boat" size={24} color="#00F0FF" />
           </TouchableOpacity>
         )}
       />
