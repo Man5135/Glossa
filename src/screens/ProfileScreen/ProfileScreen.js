@@ -57,9 +57,9 @@ export default function ProfileScreen({ navigation }) {
       </TouchableOpacity>
     </View>
 
-    <View>
+    <View style={styles.main}>
       <Typography style={styles.nickname}>
-        {user?.displayName || "Ученик Glossa"}
+        {userData?.nickname ? userData.nickname : (user?.displayName || "Ученик Glossa")}
       </Typography>
 
       <Typography style={styles.email}>

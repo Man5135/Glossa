@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { db, auth } from '../../firebase/config';
-import { collection, getDocs, doc, onSnapshot, query, orderBy } from "firebase/firestore";
+import { collection, getDocs, doc, onSnapshot, query, orderBy, updateDoc } from "firebase/firestore";
 
 // Импорт стилей
 import { styles } from './styles';
@@ -10,8 +10,10 @@ import { styles } from './styles';
 import { ScreenWrapper } from '../../components/screen-wrapper/ScreenWrapper';
 import { LessonButton } from '../../components/lesson-button/LessonButton';
 import { Typography } from '../../components/typography/Typography';
+import StreakBar from '../../components/streak-bar/StreakBar';
 
 export default function HomeScreen({ navigation }) {
+  const user = auth.currentUser
   const [lessons, setLessons] = useState([]);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -23,6 +25,8 @@ export default function HomeScreen({ navigation }) {
     }
 
     const uid = auth.currentUser.uid;
+    
+
 
     const userDocRef = doc(db, "users", uid);
     const unsubUser = onSnapshot(userDocRef, (snapshot) => {
@@ -40,6 +44,19 @@ export default function HomeScreen({ navigation }) {
       console.error("Ошибка при получении данных пользователя:", error);
       setLoading(false);
     });
+
+  if (userData?.lastActivityDate) {
+    const today = new Date().toISOString().split('T')[0];
+    const last = userData.lastActivityDate;
+    
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayString = yesterday.toISOString().split('T')[0];
+
+    if (last !== today && last !== yesterdayString && userData.currentStreak > 0) {
+       updateDoc(doc(db, "users", auth.currentUser.uid), { currentStreak: 0 });
+    }
+  }
 
     const fetchLessons = async () => {
       try {
@@ -85,6 +102,7 @@ export default function HomeScreen({ navigation }) {
 
     return 'locked';
   };
+  
 
   if (loading) {
     return (
@@ -100,10 +118,13 @@ export default function HomeScreen({ navigation }) {
     <ScreenWrapper>
       {/* Шапка с общей инфой */}
       <View style={styles.header}>
-        <Typography variant="header">Греческий язык</Typography>
-        <Typography variant="body" style={styles.subtitle}>
-          Выучено слов: {userData?.learnedWords?.length || 0}
-        </Typography>
+        
+        <Typography variant='header' style={styles.headerTitle}>Привет, {user?.displayName }</Typography>
+
+        <StreakBar
+        streak={userData?.currentStreak || 0} // Изменено с currentUser на currentStreak
+        lastActivityDate={userData?.lastActivityDate}
+        />  
       </View>
       
       <ScrollView 
@@ -136,6 +157,8 @@ export default function HomeScreen({ navigation }) {
             }
           }}
         />
+
+          
       </View>
     );
   })}

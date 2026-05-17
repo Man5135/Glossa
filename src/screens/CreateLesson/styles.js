@@ -35,10 +35,18 @@ export const styles = {
     fontWeight: 'bold',
     fontSize: 12,
   },
-  deleteButtonText: {
-    color: '#FF4444',
-    fontSize: 14,
-    fontWeight: '500',
+  
+  dangerousZoneContainer:{
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 20,
+    marginTop: 20,
+    borderRadius: 10,
+  },
+
+  dangerousZoneTitle: {
+    backgroundColor: '#900020',
+    padding: 20,
   },
   // Панель кнопок добавления
   addButtonsWrapper: {

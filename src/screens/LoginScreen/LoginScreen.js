@@ -8,7 +8,6 @@ import { Logo } from '../../components/logo/Logo';
 import { AuthInput } from '../../components/auth-input/AuthInput';
 import { Button } from '../../components/button/Button';
 import { AuthLink } from '../../components/auth-link/AuthLink';
-import { seedAppDatabase, seedLessons } from '../../components/seedDatabase';
 
 
 export default function LoginScreen({ navigation }) {

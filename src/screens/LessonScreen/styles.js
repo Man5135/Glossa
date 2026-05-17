@@ -83,24 +83,16 @@ export const styles = StyleSheet.create({
   },
   tableRow: {
     flexDirection: 'row',
-    padding: 15,
+    padding: 5,
     borderBottomWidth: 1,
     borderBottomColor: '#222',
+    
   },
   tableRowEven: {
     backgroundColor: '#161616',
+    
   },
-  tableCellLeft: {
-    flex: 1,
-    color: '#00F0FF',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  tableCellRight: {
-    flex: 1,
-    color: '#E0E0E0',
-    fontSize: 16,
-  },
+  
 
   // КВИЗЫ
   optionButton: {

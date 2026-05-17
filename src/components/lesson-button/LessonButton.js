@@ -9,7 +9,6 @@ export function LessonButton({ title, status, onPress }) {
     switch (status) {
       case 'completed': return '#4CAF50'; // Зеленый
       case 'available': return '#2196F3'; // Синий
-      case 'test': return '#FFD700';      // Золотой
       case 'locked': return '#757575';    // Серый
       default: return '#2196F3';
     }

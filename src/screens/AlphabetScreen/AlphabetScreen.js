@@ -55,10 +55,6 @@ export default function AlphabetScreen( {navigation} ){
         activeOpacity={0.7}
         >
           <Typography style={styles.char}>{item.char}</Typography>
-          <Typography style={styles.name}>{item.name}</Typography>
-          <View style={styles.soundBadge}>
-            <Typography style={styles.soundText}>[{item.sound}]</Typography>
-          </View>
         </TouchableOpacity>
       ))}
     </View>

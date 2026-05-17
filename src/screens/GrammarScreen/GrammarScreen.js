@@ -82,14 +82,15 @@ export default function GrammarScreen({ navigation }) {
         <View style={{ flex: 1 }}>
           <Typography variant="header" style={[
             { fontSize: 18 },
-            !isUnlocked && styles.lockedText
+            !isUnlocked && styles.lockedText,
+            styles.main
           ]}>
             {item.title}
           </Typography>
           <Typography variant="caption" style={{ color: isUnlocked ? '#00F0FF' : '#555' }}>
             {isUnlocked 
               ? (item.category || "Грамматика") 
-              : `Пройдите ${item.unlockLessonId.replace('_', ' ')}, чтобы открыть`}
+              : `Пройдите ${item.unlockLessonId.replace('_', ' ')} урок, чтобы открыть`}
           </Typography>
         </View>
         
@@ -114,12 +115,15 @@ export default function GrammarScreen({ navigation }) {
 
   return (
     <ScreenWrapper>
-      <View style={styles.header}>
-        <Typography variant="header">Справочник</Typography>
-        <Typography variant="body" style={{ color: '#888' }}>
-          Доступно тем: {topics.filter(t => !t.unlockLessonId || completedLessons.includes(t.unlockLessonId)).length}
-        </Typography>
-      </View>
+    <View style={styles.header}>
+      <Typography variant="header" style={styles.headerTitle}>
+        Справочник
+      </Typography>
+      
+      <Typography style={styles.headerSubtitle}>
+        Доступно тем: {topics.filter(t => !t.unlockLessonId || completedLessons.includes(t.unlockLessonId)).length}
+      </Typography>
+    </View>
 
       <FlatList
         data={topics}
@@ -139,7 +143,7 @@ export default function GrammarScreen({ navigation }) {
                 Основы чтения и произношение
               </Typography>
             </View>
-            <Ionicons name="boat" size={24} color="#00F0FF" />
+            <Ionicons name="library-outline" size={24} color="#00F0FF" />
           </TouchableOpacity>
         )}
       />

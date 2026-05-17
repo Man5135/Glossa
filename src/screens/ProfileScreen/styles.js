@@ -49,5 +49,11 @@ export const styles = {
   statsDetail: {
     color: '#ccc',
     fontSize: 13,
+  },
+
+  main: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 15,
   }
 };

@@ -12,13 +12,15 @@ import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { db, auth } from '../../firebase/config';
 import { Ionicons } from '@expo/vector-icons';
 
-import { styles } from './styles'; // Все стили теперь здесь
+import { styles } from './styles'; 
 import { ScreenWrapper } from '../../components/screen-wrapper/ScreenWrapper';
 import { HeaderButton } from '../../components/header-button/HeaderButton';
 import { ProgressBar } from '../../components/progress-bar/ProgressBar';
 import { Button } from '../../components/button/Button';
 import { Typography } from '../../components/typography/Typography';
 import { Audio } from 'expo-av';
+import { updateStreak } from '../../utils/streakLogic';
+
 
 const playFeedbackSound = async(isCorrect) => {
   const soundPath = isCorrect
@@ -38,48 +40,57 @@ const playFeedbackSound = async(isCorrect) => {
 const speak = (text) => {
   Speech.speak(text, { language: 'el', pitch: 0.9, rate: 0.8 });
 };
-const handleFinish = async () => {
-  setLoading(true);
-  try {
-    const uid = auth.currentUser?.uid;
-    if (!uid) return;
 
-    const userRef = doc(db, "users", uid);
-
-    // Собираем новые выученные слова и грамматику из текущего урока
-    const newWords = content.filter(i => i.type === 'word').map(i => i.id);
-    const newGrammar = content.filter(i => i.type === 'grammar').map(i => i.id);
-
-    await updateDoc(userRef, {
-      // Сохраняем ID урока. Убедись, что это строка, например "lesson_1"
-      completedLessons: arrayUnion(String(lessonData.id)), 
-      learnedWords: arrayUnion(...newWords),
-      learnedGrammar: arrayUnion(...newGrammar)
-    });
-    
-    Alert.alert("Успех!", "Урок пройден и прогресс сохранен");
-    navigation.goBack();
-  } catch (e) {
-    console.error(e);
-    Alert.alert("Ошибка", "Не удалось сохранить результат");
-  } finally {
-    setLoading(false);
-  }
-};
-
-
-// --- Вспомогательный компонент таблицы ---
+// --- Полностью динамический компонент таблицы ---
 const RenderTable = ({ data }) => {
   if (!data || !Array.isArray(data)) return null;
 
   return (
     <View style={styles.tableContainer}>
-      {data.map((row, index) => (
-        <View key={index} style={[styles.tableRow, index % 2 === 0 && styles.tableRowEven]}>
-          <Typography variant="body" style={styles.tableCellLeft}>{row.col1}</Typography>
-          <Typography variant="body" style={styles.tableCellRight}>{row.col2}</Typography>
-        </View>
-      ))}
+      {data.map((row, index) => {
+        // Проверяем, первая ли это строка (верхняя строка-заголовок)
+        const isHeaderRow = index === 0;
+
+        const isNewDynamicFormat = row && Array.isArray(row.cells);
+        
+        let cellArray = [];
+        if (isNewDynamicFormat) {
+          cellArray = row.cells;
+        } else if (row && typeof row === 'object') {
+          cellArray = [row.col1 || "", row.col2 || ""];
+        }
+
+        return (
+          <View 
+            key={row.id || index} 
+            // Добавляем к фону строки чередование, но убираем его для заголовка, если нужно
+            style={[styles.tableRow, index % 2 === 0 && styles.tableRowEven]}
+          >
+            {cellArray.map((cellText, cellIndex) => {
+              // Дефолтный базовый стиль для ячеек
+              let cellStyle = { flex: 1, padding: 10, textAlign: 'center' }; 
+              
+              if (cellIndex === 0) {
+                cellStyle = { ...cellStyle, ...styles.tableCellLeft }; 
+              } else if (cellIndex === cellArray.length - 1) {
+                cellStyle = { ...cellStyle, ...styles.tableCellRight }; 
+              }
+
+              // ХАК: Перебиваем цвет текста на голубой для ВСЕХ столбцов в ПЕРВОЙ строке
+              const textStyle = [
+                cellStyle, 
+                isHeaderRow && { color: '#00F0FF', fontWeight: 'bold' } // Твой фирменный голубой неон
+              ];
+
+              return (
+                <Typography key={cellIndex} variant="body" style={textStyle}>
+                  {cellText}
+                </Typography>
+              );
+            })}
+          </View>
+        );
+      })}
     </View>
   );
 };
@@ -88,9 +99,6 @@ const RenderTable = ({ data }) => {
 const InternalGrammarCard = ({ data }) => (
   <ScrollView style={styles.cardContainer} contentContainerStyle={{ paddingBottom: 20 }}>
     <View style={styles.innerCard}>
-      <Typography variant="header" style={{ color: '#00F0FF', marginBottom: 15 }}>
-        {data.title}
-      </Typography>
       
       {data.rule && (
         <View style={styles.ruleBadge}>
@@ -196,6 +204,7 @@ export default function LessonScreen({ route, navigation }) {
         learnedGrammar: arrayUnion(...newGrammar)
       });
       
+      await updateStreak(uid);
       Alert.alert("Успех!", "Урок пройден");
       navigation.goBack();
     } catch (e) {
@@ -217,7 +226,7 @@ export default function LessonScreen({ route, navigation }) {
       <View style={styles.main}>
         {loading ? <ActivityIndicator size="large" color="#00F0FF" /> : (
           <View style={{ flex: 1, width: '100%' }}>
-            {currentStep.type === 'word' && <InternalWordCard data={currentStep} />}
+            {currentStep.type === 'word' && <InternalWordCard data={currentStep}/>}
             {currentStep.type === 'grammar' && <InternalGrammarCard data={currentStep} />}
             {currentStep.type === 'quiz' && <InternalQuizCard data={currentStep} onCorrect={handleNext} />}
           </View>

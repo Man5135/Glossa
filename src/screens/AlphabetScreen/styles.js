@@ -21,7 +21,7 @@ export const styles = {
     justifyContent: 'space-between',
   },
   card: {
-    width: '%50', // Две колонки
+    width: '%25', // Две колонки
     backgroundColor: '#1A2A32',
     borderRadius: 16,
     padding: 20,
@@ -38,10 +38,8 @@ export const styles = {
     shadowRadius: 4,
   },
   char: {
-    fontSize: 34,
-    fontWeight: 'bold',
+    fontSize: 16,
     color: '#FFFFFF',
-    marginBottom: 4,
   },
   name: {
     color: '#00F0FF',
@@ -63,6 +61,7 @@ export const styles = {
   text: {
     fontSize: 16,
     textAlign: 'flex-start',
-    color: '#ccc'
+    color: '#ccc',
+    marginBottom: 15,
   }
 };

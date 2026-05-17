@@ -1,5 +1,3 @@
-import { StyleSheet } from "react-native";
-
 export const styles = ({
   loaderContainer: {
     flex: 1,
@@ -7,10 +5,19 @@ export const styles = ({
     alignItems: 'center',
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginTop: 40,
     marginBottom: 20,
     paddingHorizontal: 20,
+    
   },
+
+  headerTitle: {
+    fontSize: 22,
+  },
+
   subtitle: {
     color: '#888',
     marginTop: 5,
@@ -19,7 +26,7 @@ export const styles = ({
   scrollContent: {
     paddingBottom: 40,
   },
-  // Добавим вспомогательный стиль для центрирования, если уроков нет
+
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -29,7 +36,7 @@ export const styles = ({
 
   lessonStepContainer: {
     width: '100%',
-    alignItems: 'center', // Все уроки строго по центру
+    alignItems: 'center',
   },
 
   // Прямая вертикальная линия
@@ -43,5 +50,6 @@ export const styles = ({
   // Цвет линии, если путь пройден
   lineActive: {
     backgroundColor: '#00F0FF',
+    borderWidth: 1,
   }
 });

@@ -140,9 +140,12 @@ export default function SettingsScreen({navigation}) {
 
   return (
     <ScreenWrapper>
-        <HeaderButton onPress={() => navigation.goBack()}/>
+        <View style={styles.sectionTitle}>
+        <HeaderButton variant="back" onPress={() => navigation.goBack()}/>
+        <Typography variant="description">Настройки</Typography>
+        </View>
         {/* СЕКЦИЯ НИКНЕЙМА */}
-        <Typography variant="description" style={styles.sectionTitle}>ПРОФИЛЬ</Typography>
+        
         <View style={styles.inputGroup}>
           <AuthInput 
             label="Ваш никнейм" 

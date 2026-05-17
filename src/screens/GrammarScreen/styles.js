@@ -2,22 +2,38 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   header: { 
-    padding: 20, 
-    borderBottomWidth: 1, 
-    borderBottomColor: '#eee' 
+    paddingTop: 20,          // Отступ сверху (чтобы не прилипало к краю)
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+    alignItems: 'center',    // Центрирует элементы по горизонтали
+    justifyContent: 'center',
+    
   },
-  topicCard: {
+
+  headerTitle: {
+    fontSize: 28,
+    textAlign: 'center',
+    marginBottom: 5,
+    fontWeight: 'bold',
+  },
+  
+  headerSubtitle: {
+    color: '#888',
+    fontSize: 14,
+    textAlign: 'center',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase', // Делает текст маленьким, но важным
+  },
+  card: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 20,
-    backgroundColor: '#fff',
     borderRadius: 12,
     marginBottom: 10,
     elevation: 2,
   },
   lockedCard: { 
-    backgroundColor: '#636363',
     borderRadius: 5,
     elevation: 0 
   },
@@ -30,5 +46,5 @@ export const styles = StyleSheet.create({
   },
   topicInfo: { 
     flex: 1 
-  }
+  },
 });

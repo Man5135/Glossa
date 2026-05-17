@@ -5,6 +5,9 @@ import { Typography } from '../../components/typography/Typography';
 import { Button } from '../../components/button/Button';
 import { HeaderButton } from '../../components/header-button/HeaderButton';
 import { styles } from './styles';
+import { updateStreak } from '../../utils/streakLogic';
+import { auth } from '../../firebase/config';
+import { Audio } from 'expo-av';
 
 export default function ReviewScreen({ route, navigation }) {
   // 1. Получаем данные. В HomeScreen должно быть learnedWords (это массив строк-ID)
@@ -13,6 +16,22 @@ export default function ReviewScreen({ route, navigation }) {
   const [quizSteps, setQuizSteps] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+
+
+  const playFeedbackSound = async(isCorrect) => {
+    const soundPath = isCorrect
+    ? require('../../../assets/sounds/correct.mp3')
+    : require('../../../assets/sounds/wrong.mp3');
+  
+    const { sound } = await Audio.Sound.createAsync(soundPath);
+    await sound.playAsync();
+  
+    sound.setOnPlaybackStatusUpdate(async (status) => {
+      if (status.didJustFinish) {
+        await sound.unloadAsync();
+      }
+    });
+  };
 
   useEffect(() => {
     if (lessons.length > 0 && learnedWordsIds.length > 0) {
@@ -72,7 +91,8 @@ export default function ReviewScreen({ route, navigation }) {
           correctAnswer: rus,
           allOptions: options
         };
-      }).sort(() => 0.5 - Math.random());
+      }).sort(() => 0.5 - Math.random())
+      .slice(0, 10);
 
       setQuizSteps(quiz);
     } catch (e) {
@@ -83,18 +103,27 @@ export default function ReviewScreen({ route, navigation }) {
     }
   };
 
-  const handleAnswer = (selected) => {
-    if (selected === quizSteps[currentIndex].correctAnswer) {
-      if (currentIndex < quizSteps.length - 1) {
-        setCurrentIndex(currentIndex + 1);
-      } else {
-        Alert.alert("Успех!", "Все слова повторены!");
-        navigation.goBack();
-      }
+  const handleAnswer = async (selectedOption) => {
+  const currentStep = quizSteps[currentIndex];
+  const isCorrect = selectedOption === currentStep.correctAnswer;
+
+  // Воспроизводим звук
+  await playFeedbackSound(isCorrect);
+
+  if (isCorrect) {
+    if (currentIndex < quizSteps.length - 1) {
+      setCurrentIndex(currentIndex + 1);
     } else {
-      Alert.alert("Неверно", "Попробуйте еще раз");
+      const uid = auth.currentUser?.uid;
+      if (uid) await updateStreak(uid);
+      
+      Alert.alert("Успех!", "Все слова повторены!");
+      navigation.goBack();
     }
-  };
+  } else {
+    Alert.alert("Неверно", "Попробуйте еще раз");
+  }
+};
 
   if (loading || quizSteps.length === 0) {
     return (
