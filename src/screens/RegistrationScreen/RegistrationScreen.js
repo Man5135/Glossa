@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { auth, db } from '../../firebase/config';
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc,  writeBatch } from "firebase/firestore";
+import { doc,  Timestamp,  writeBatch } from "firebase/firestore";
 
 import { ScreenWrapper } from '../../components/screen-wrapper/ScreenWrapper';
 import { Logo } from '../../components/logo/Logo';
@@ -12,7 +12,6 @@ import { Notification } from '../../components/notification/Notification';
 
 export default function RegistrationScreen({ navigation }) {
   const [email, setEmail] = useState('');
-  const [login, setLogin] = useState('');
   const [nickname, setNickname] = useState('');
   const [password, setPassword] = useState('');
 
@@ -31,10 +30,7 @@ export default function RegistrationScreen({ navigation }) {
       showNotification("Введите корректный email");
       return;
     }
-    if (login.length < 3) {
-      showNotification("Логин должен быть длиннее 2 символов");
-      return;
-    }
+
     if (password.length < 6) {
       showNotification("Пароль должен быть не менее 6 символов");
       return;
@@ -57,8 +53,10 @@ export default function RegistrationScreen({ navigation }) {
         email: email,
         login: login,
         nickname: nickname,
-        
+        role: "user",
         createdAt: new Date().toISOString(),
+        lastActivityDate: new Date().toISOString().split('T')[0],
+        currentStreak: 0,
         completedLessons: [], // Массив ID пройденных уроков
         learnedWords: [],     // Объекты слов для режима Review
         learnedGrammar: [],   // ID изученных правил
@@ -99,13 +97,6 @@ export default function RegistrationScreen({ navigation }) {
         value={email}
         onChangeText={setEmail}
         placeholder="example@mail.com"
-      />
-      
-      <AuthInput
-        label="Ваш логин"
-        value={login}
-        onChangeText={setLogin}
-        placeholder="Nikos777"
       />
 
       <AuthInput

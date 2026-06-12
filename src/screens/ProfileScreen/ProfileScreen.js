@@ -48,6 +48,7 @@ export default function ProfileScreen({ navigation }) {
     return () => unsubUser();
   }, [user]);
 
+
   return(
   <ScreenWrapper>
     <View style={styles.headerRow}>
@@ -72,11 +73,18 @@ export default function ProfileScreen({ navigation }) {
 
       <Button
         title="Повторить выученное" 
+        disabled={(!userData?.learnedWords || userData.learnedWords.length < 4) }
         onPress={() => navigation.navigate('Review', { 
           lessons: lessons, 
           learnedWordsIds: userData?.learnedWords || []
         })} 
       />
+      
+      {(!userData?.learnedWords || userData.learnedWords.length < 4)  && (
+        <Typography variant="body">
+          Чтобы получить доступ к повторению слов, будет достаточно пройти первый урок !
+        </Typography>
+      )}
     </View>
   </ScreenWrapper>
   )

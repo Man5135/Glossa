@@ -13,7 +13,7 @@ export const styles = StyleSheet.create({
     backgroundColor: '#1A2A32',
     borderTopWidth: 0,
     height: Platform.OS === 'ios' ? 110 : 90,
-    paddingBottom: Platform.OS === 'ios' ? 35 : 10,
+    paddingBottom: Platform.OS === 'ios' ? 50 : 10,
   },
   label: {
     fontSize: 12,

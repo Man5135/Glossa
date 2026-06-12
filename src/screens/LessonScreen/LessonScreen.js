@@ -76,7 +76,6 @@ const RenderTable = ({ data }) => {
                 cellStyle = { ...cellStyle, ...styles.tableCellRight }; 
               }
 
-              // ХАК: Перебиваем цвет текста на голубой для ВСЕХ столбцов в ПЕРВОЙ строке
               const textStyle = [
                 cellStyle, 
                 isHeaderRow && { color: '#00F0FF', fontWeight: 'bold' } // Твой фирменный голубой неон

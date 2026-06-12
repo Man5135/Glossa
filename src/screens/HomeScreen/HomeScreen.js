@@ -13,7 +13,7 @@ import { Typography } from '../../components/typography/Typography';
 import StreakBar from '../../components/streak-bar/StreakBar';
 
 export default function HomeScreen({ navigation }) {
-  const user = auth.currentUser
+  const user = auth.currentUser;
   const [lessons, setLessons] = useState([]);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -25,18 +25,46 @@ export default function HomeScreen({ navigation }) {
     }
 
     const uid = auth.currentUser.uid;
-    
-
-
     const userDocRef = doc(db, "users", uid);
-    const unsubUser = onSnapshot(userDocRef, (snapshot) => {
+    
+    // Переменная предотвращает повторные сетевые запросы при обновлениях внутри одной сессии
+    let isChecked = false;
+
+    const unsubUser = onSnapshot(userDocRef, async (snapshot) => {
       if (snapshot.exists()) {
-        setUserData(snapshot.data());
+        const data = snapshot.data();
+        setUserData(data);
+
+        // МГНОВЕННАЯ ПРОВЕРКА И СБРОС СТРИКА ПРИ ЗАХОДЕ
+        if (data.lastActivityDate && data.currentStreak > 0 && !isChecked) {
+          isChecked = true; 
+
+          // Получаем защищенные сетевые дни
+          let todayDays = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
+          try {
+            const response = await fetch("https://worldtimeapi.org/api/timezone/Etc/UTC");
+            const resData = await response.json();
+            todayDays = Math.floor(new Date(resData.utc_datetime).getTime() / (1000 * 60 * 60 * 24));
+          } catch (e) {}
+
+          const lastDays = Math.floor((data.lastActivityDate.seconds * 1000) / (1000 * 60 * 60 * 24));
+
+          // Если прошло больше 1 календарного дня с момента активности — стрик сгорел
+          if (todayDays - lastDays > 1) {
+            try {
+              await updateDoc(userDocRef, { currentStreak: 0 });
+              console.log("Стрик мгновенно обнулен в бд, так как время вышло.");
+            } catch (err) {
+              console.error("Ошибка сброса стрика:", err);
+            }
+          }
+        }
       } else {
         setUserData({
           completedLessons: [],
           learnedWords: [],
-          learnedGrammar: []
+          learnedGrammar: [],
+          currentStreak: 0
         });
       }
       setLoading(false);
@@ -44,19 +72,6 @@ export default function HomeScreen({ navigation }) {
       console.error("Ошибка при получении данных пользователя:", error);
       setLoading(false);
     });
-
-  if (userData?.lastActivityDate) {
-    const today = new Date().toISOString().split('T')[0];
-    const last = userData.lastActivityDate;
-    
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayString = yesterday.toISOString().split('T')[0];
-
-    if (last !== today && last !== yesterdayString && userData.currentStreak > 0) {
-       updateDoc(doc(db, "users", auth.currentUser.uid), { currentStreak: 0 });
-    }
-  }
 
     const fetchLessons = async () => {
       try {
@@ -74,35 +89,24 @@ export default function HomeScreen({ navigation }) {
 
     fetchLessons();
 
-    // Отписываемся от слушателя при выходе с экрана
     return () => unsubUser();
   }, []);
 
-  // Функция расчета статуса урока
   const getLessonStatus = (lesson, index) => {
     if (!userData) return 'locked';
-    
     const completedIds = userData.completedLessons || [];
-    
-    // Если урок уже пройден
     if (completedIds.includes(lesson.id)) {
       return 'completed';
     }
-
-    // Логика открытия: урок доступен, если он первый 
-    // или если предыдущий урок находится в списке пройденных
     const isFirstLesson = index === 0;
     const prevLessonId = index > 0 ? lessons[index - 1]?.id : null;
     const isPrevCompleted = isFirstLesson || completedIds.includes(prevLessonId);
 
     if (isPrevCompleted) {
-      // Если это тест — можно вернуть 'test', иначе 'available'
       return lesson.type === 'test' ? 'test' : 'available';
     }
-
     return 'locked';
   };
-  
 
   if (loading) {
     return (
@@ -116,53 +120,36 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <ScreenWrapper>
-      {/* Шапка с общей инфой */}
       <View style={styles.header}>
-        
-        <Typography variant='header' style={styles.headerTitle}>Привет, {user?.displayName }</Typography>
-
+        <Typography variant='header' style={styles.headerTitle}>Привет, {user?.displayName}</Typography>
         <StreakBar
-        streak={userData?.currentStreak || 0} // Изменено с currentUser на currentStreak
-        lastActivityDate={userData?.lastActivityDate}
+          streak={userData?.currentStreak || 0}
+          lastActivityDate={userData?.lastActivityDate}
         />  
       </View>
       
-      <ScrollView 
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         {lessons.map((lesson, index) => {
-    const status = getLessonStatus(lesson, index);
-
-    return (
-      <View key={lesson.id} style={styles.lessonStepContainer}>
-        
-        {/* Рисуем прямую линию ПЕРЕД уроком */}
-        {index > 0 && (
-          <View style={[
-            styles.verticalLine, 
-            status !== 'locked' && styles.lineActive // Линия светится, если урок доступен
-          ]} />
-        )}
-
-        {/* Кнопка урока */}
-        <LessonButton
-          title={lesson.title}
-          status={status}
-          onPress={() => {
-            if (status === 'locked') {
-              Alert.alert("Урок закрыт", "Пройдите предыдущий урок");
-            } else {
-              navigation.navigate('LessonScreen', { lessonData: lesson });
-            }
-          }}
-        />
-
-          
-      </View>
-    );
-  })}
-
+          const status = getLessonStatus(lesson, index);
+          return (
+            <View key={lesson.id} style={styles.lessonStepContainer}>
+              {index > 0 && (
+                <View style={[styles.verticalLine, status !== 'locked' && styles.lineActive]} />
+              )}
+              <LessonButton
+                title={lesson.title}
+                status={status}
+                onPress={() => {
+                  if (status === 'locked') {
+                    Alert.alert("Урок закрыт", "Пройдите предыдущий урок");
+                  } else {
+                    navigation.navigate('LessonScreen', { lessonData: lesson });
+                  }
+                }}
+              />
+            </View>
+          );
+        })}
         {lessons.length === 0 && !loading && (
           <View style={styles.loaderContainer}>
             <Typography variant="body">Уроки загружаются или отсутствуют...</Typography>

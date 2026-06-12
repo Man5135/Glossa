@@ -1,24 +1,31 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore"; 
-import { getAuth } from "firebase/auth";
+// Добавляем необходимые методы инициализации Auth
+import { getAuth, initializeAuth, getReactNativePersistence } from "firebase/auth";
+// Импортируем AsyncStorage и Platform для разделения ПК и Телефона
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Platform } from "react-native";
 
-// Your web app's Firebase configuration
+// Безопасное считывание параметров из переменных окружения (подход Expo)
 const firebaseConfig = {
-  apiKey: "AIzaSyBAMxhshRuTwiHFbocROLSb-hk8qWlHv2U",
-  authDomain: "glossa-ellinika.firebaseapp.com",
-  projectId: "glossa-ellinika",
-  storageBucket: "glossa-ellinika.firebasestorage.app",
-  messagingSenderId: "878493278977",
-  appId: "1:878493278977:web:5f3fb206ea72a382e33100",
-  measurementId: "G-NJEP6H2YVF"
+  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-// Initialize Firebase
+// Инициализация экземпляра приложения
 const app = initializeApp(firebaseConfig);
 
-// Теперь getFirestore будет определен
+// Экспорт базы данных
 export const db = getFirestore(app);
-export const auth = getAuth(app);
-const analytics = getAnalytics(app);
+
+// Правильная кроссплатформенная инициализация Auth
+export const auth = Platform.OS === 'web' 
+  ? getAuth(app) // Для ПК (веб-версии) оставляем стандартное поведение
+  : initializeAuth(app, {
+      persistence: getReactNativePersistence(AsyncStorage), // Для телефонов принудительно сохраняем сессию в память
+    });
