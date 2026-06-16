@@ -121,7 +121,7 @@ export default function HomeScreen({ navigation }) {
   return (
     <ScreenWrapper>
       <View style={styles.header}>
-        <Typography variant='header' style={styles.headerTitle}>Привет, {user?.displayName}</Typography>
+        <Typography variant='header' style={styles.headerTitle}>Привет, {userData?.nickname ? userData.nickname : (user?.displayName || "Ученик")}</Typography>
         <StreakBar
           streak={userData?.currentStreak || 0}
           lastActivityDate={userData?.lastActivityDate}

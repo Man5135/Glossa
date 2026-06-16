@@ -51,7 +51,6 @@ export default function RegistrationScreen({ navigation }) {
       batch.set(userRef, {
         uid: user.uid,
         email: email,
-        login: login,
         nickname: nickname,
         role: "user",
         createdAt: new Date().toISOString(),
@@ -98,6 +97,8 @@ export default function RegistrationScreen({ navigation }) {
         onChangeText={setEmail}
         placeholder="example@mail.com"
       />
+
+      
 
       <AuthInput
         label="Ваш никнейм"
