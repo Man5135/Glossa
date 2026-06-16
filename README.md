@@ -28,7 +28,7 @@
 
 ## 1. Клонирование репозитория
 
-git clone https://github.com/your-username/glossa-app.git
+git clone   https://github.com/Man5135/Glossa
 
 cd glossa-app
 
